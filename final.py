@@ -1,4 +1,3 @@
-
 import streamlit as st
 import PyPDF2
 from sentence_transformers import SentenceTransformer
@@ -79,7 +78,7 @@ def local_css(file_name):
 
 local_css("style.css")
 
-pdf_file_path = "QandA (1).pdf"
+pdf_file_path = "QandA1.pdf"
 if os.path.exists(pdf_file_path):
     with st.spinner('Processing PDF...'):
         text = extract_text_from_pdf(pdf_file_path)
