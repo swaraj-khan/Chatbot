@@ -1,3 +1,4 @@
+
 import streamlit as st
 import PyPDF2
 from sentence_transformers import SentenceTransformer
@@ -78,7 +79,7 @@ def local_css(file_name):
 
 local_css("style.css")
 
-pdf_file_path = "final_v2.pdf"
+pdf_file_path = "QandA (1).pdf"
 if os.path.exists(pdf_file_path):
     with st.spinner('Processing PDF...'):
         text = extract_text_from_pdf(pdf_file_path)
@@ -92,12 +93,15 @@ else:
 if "history" not in st.session_state:
     st.session_state.history = []
 
+from urllib.parse import quote  # Import at the beginning of the file
+
 def display_chat():
     if st.session_state.history:
         for qa in st.session_state.history:
-            email_body = f"Subject=Regarding your question: {qa['question']}&body={qa['answer']}"
+            encoded_answer = quote(qa['answer'])  # URL-encode the answer
+            email_body = f"Subject=Regarding your question: {qa['question']}&body={encoded_answer}"
             mailto_link = f"mailto:?{email_body}"
-            st.markdown(f'<div class="qa-container"><div class="question"><strong>Q:</strong> {qa["question"]}</div><div class="answer"><strong>A:</strong> {qa["answer"]} <a href="{mailto_link}"> 📧 </a></div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="qa-container"><div class="question"><strong>Q:</strong> {qa["question"]}</div><div class="answer"><strong>A:</strong> {qa["answer"]} <a href="{mailto_link}" target="_blank">📧</a></div></div>', unsafe_allow_html=True)
             st.markdown('<div class="question-answer-divider"></div>', unsafe_allow_html=True)
     question = st.text_input("Ask a question:", key="new_question")
     if question and (not st.session_state.get('last_question') or st.session_state.last_question != question):
@@ -109,5 +113,5 @@ def display_chat():
         st.session_state.history.append({"question": sanitized_question, "answer": answer})
         st.session_state.last_question = question
         st.rerun()
-
+        
 display_chat()
